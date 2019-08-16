@@ -1,7 +1,3 @@
-# FeeTech
-Repository to  ES63G class
-![Logo of the project](./images/logo.sample.png)
-
 # FeeTech &middot; 
 
 Financial system for personal accounts
