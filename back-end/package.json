@@ -6,5 +6,8 @@
   "scripts": {},
   "keywords": [],
   "author": "Caroline Marques <caroline.karolll@hotmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
