@@ -1,13 +1,30 @@
 {
-  "name": "api-back-end",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {},
-  "keywords": [],
-  "author": "Caroline Marques <caroline.karolll@hotmail.com>",
-  "license": "ISC",
+  "name": "webcontas",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "start:dev": "nodemon --watch .env --watch app.js --watch bin ./bin/www --watch controller --watch db --watch routes --watch core --watch config",
+    "db": "sequelize init",
+    "db:migrate": "sequelize db:migrate",
+    "generate": "sequelize model:create"
+  },
   "dependencies": {
-    "express": "^4.17.1"
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.4",
+    "debug": "~2.6.9",
+    "dotenv": "^5.0.1",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.0",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.8"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.5"
   }
 }
