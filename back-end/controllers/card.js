@@ -1,5 +1,4 @@
 const card = require('../db/models').Card;
-const comment = require('../db/models').Comment;
 const ResponseFormat = require('../core').ResponseFormat;
 module.exports = {
     create(req, res) {
@@ -38,35 +37,6 @@ module.exports = {
             "error"
         )));
     },
-    listWithComment(req, res) {
-        return user
-        .findAll({
-            include: [{
-                model: comment,
-                as: 'comments'
-            }],
-            order:[
-             ['createdAt', 'DESC'],
-             [{model: comment, as:'comments'}, 'createdAt', 'ASC'],
-            ],
-        })
-        .then((users) => res.status(200).json(
-            ResponseFormat.build(
-                users,
-                "all user information are reterive successfully",
-                200,
-                "success"
-            )
-        ))
-        .catch((error) => res.status(500).json(
-            ResponseFormat.error(
-                error,
-                "somthing went wrong when reterieve the data",
-                500,
-                "error"
-            )
-        ))
-    },
   
     update(req, res) {
         return user
@@ -85,14 +55,14 @@ module.exports = {
 
             return usr
             .update({
-                name: req.body.name || usr.firstName,
-                email: req.body.email || usr.lastName,
-                password:  req.body.password || usr.email
+                amount: req.body.password || usr.amount ,
+                card_name: req.body.name || usr.card_name ,
+                removed: req.body.email || usr.removed ,
             })
             .then(() => res.status(200).json(
                 ResponseFormat.build(
                     usr,
-                    "user Update successfully",
+                    "user card Update successfully",
                     200,
                     "success"
                 )
@@ -100,7 +70,7 @@ module.exports = {
             .catch((error) => res.status(500).json(
                 ResponseFormat.build(
                     {},
-                    "someting went wrong when update the user",
+                    "someting went wrong when update the user card",
                     500,
                     "error"
                 )
@@ -115,7 +85,7 @@ module.exports = {
                 return res.status(404).json(
                     ResponseFormat.error(
                         {},
-                        "user not found",
+                        "user card not found",
                         404,
                         "error"
                     )
@@ -127,7 +97,7 @@ module.exports = {
             .then(() => res.status(200).json(
                ResponseFormat.build(
                  {},
-                 "user deleted successfully",
+                 "user card deleted successfully",
                  200,
                  "success"
                )
@@ -135,7 +105,7 @@ module.exports = {
             .catch(error => res.status(500).json(
                 ResponseFormat.error(
                     error,
-                    "someting went wrong when delete the user",
+                    "someting went wrong when delete the user card",
                     500,
                     "error"
                 )
