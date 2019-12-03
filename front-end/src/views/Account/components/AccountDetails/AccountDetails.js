@@ -1,17 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardActions,
-  Divider,
-  Grid,
-  Button,
-  TextField
-} from '@material-ui/core';
+import { Card, CardHeader, CardContent, CardActions, Divider, Grid, Button, TextField } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -38,49 +30,30 @@ const AccountDetails = props => {
     });
   };
 
-  const states = [
-    {
-      value: 'alabama',
-      label: 'Alabama'
-    },
-    {
-      value: 'new-york',
-      label: 'New York'
-    },
-    {
-      value: 'san-francisco',
-      label: 'San Francisco'
-    }
-  ];
+  const [states, setStates] = useState([]);
+
+  const getStates = async () => {
+    const { data } = await axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
+    console.log(data);
+    setStates(data);
+  };
+
+  useEffect(() => {
+    getStates();
+  }, []);
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <form
-        autoComplete="off"
-        noValidate
-      >
-        <CardHeader
-          subheader="The information can be edited"
-          title="Profile"
-        />
+    <Card {...rest} className={clsx(classes.root, className)}>
+      <form autoComplete="off" noValidate>
+        <CardHeader subheader="Os dados podem ser alterados" title="Perfil" />
         <Divider />
         <CardContent>
-          <Grid
-            container
-            spacing={3}
-          >
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
+          <Grid container spacing={3}>
+            <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
-                helperText="Please specify the first name"
-                label="First name"
+                // helperText="Please specify the first name"
+                label="Nome"
                 margin="dense"
                 name="firstName"
                 onChange={handleChange}
@@ -89,14 +62,10 @@ const AccountDetails = props => {
                 variant="outlined"
               />
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
+            <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
-                label="Last name"
+                label="Sobrenome"
                 margin="dense"
                 name="lastName"
                 onChange={handleChange}
@@ -105,46 +74,16 @@ const AccountDetails = props => {
                 variant="outlined"
               />
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Email Address"
-                margin="dense"
-                name="email"
-                onChange={handleChange}
-                required
-                value={values.email}
-                variant="outlined"
-              />
+            <Grid item md={6} xs={12}>
+              <TextField fullWidth label="E-mail" margin="dense" name="email" onChange={handleChange} required value={values.email} variant="outlined" />
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Phone Number"
-                margin="dense"
-                name="phone"
-                onChange={handleChange}
-                type="number"
-                value={values.phone}
-                variant="outlined"
-              />
+            <Grid item md={6} xs={12}>
+              <TextField fullWidth label="Telefone" margin="dense" name="phone" onChange={handleChange} type="number" value={values.phone} variant="outlined" />
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
+            <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
-                label="Select State"
+                label="Estado"
                 margin="dense"
                 name="state"
                 onChange={handleChange}
@@ -153,42 +92,24 @@ const AccountDetails = props => {
                 // eslint-disable-next-line react/jsx-sort-props
                 SelectProps={{ native: true }}
                 value={values.state}
-                variant="outlined"
-              >
-                {states.map(option => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}
+                variant="outlined">
+                {states.length
+                  ? states.map(state => (
+                      <option key={state.id} value={state.id}>
+                        {state.nome}
+                      </option>
+                    ))
+                  : null}
               </TextField>
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Country"
-                margin="dense"
-                name="country"
-                onChange={handleChange}
-                required
-                value={values.country}
-                variant="outlined"
-              />
+            <Grid item md={6} xs={12}>
+              <TextField fullWidth label="Country" margin="dense" name="country" onChange={handleChange} required value={values.country} variant="outlined" />
             </Grid>
           </Grid>
         </CardContent>
         <Divider />
         <CardActions>
-          <Button
-            color="primary"
-            variant="contained"
-          >
+          <Button color="primary" variant="contained">
             Save details
           </Button>
         </CardActions>

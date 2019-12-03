@@ -6,6 +6,7 @@ import { Divider, Drawer } from '@material-ui/core';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SwapVerticalCircleIcon from '@material-ui/icons/SwapVerticalCircle';
+import CreditCardIcon from '@material-ui/icons/CreditCard';
 
 import { Profile, SidebarNav } from './components';
 
@@ -49,6 +50,11 @@ const Sidebar = props => {
       icon: <SwapVerticalCircleIcon />
     },
     {
+      title: 'Cartões',
+      href: '/cartoes',
+      icon: <CreditCardIcon />
+    },
+    {
       title: 'Configurações',
       href: '/settings',
       icon: <SettingsIcon />
@@ -56,23 +62,11 @@ const Sidebar = props => {
   ];
 
   return (
-    <Drawer
-      anchor="left"
-      classes={{ paper: classes.drawer }}
-      onClose={onClose}
-      open={open}
-      variant={variant}
-    >
-      <div
-        {...rest}
-        className={clsx(classes.root, className)}
-      >
+    <Drawer anchor="left" classes={{ paper: classes.drawer }} onClose={onClose} open={open} variant={variant}>
+      <div {...rest} className={clsx(classes.root, className)}>
         <Profile />
         <Divider className={classes.divider} />
-        <SidebarNav
-          className={classes.nav}
-          pages={pages}
-        />
+        <SidebarNav className={classes.nav} pages={pages} />
       </div>
     </Drawer>
   );
