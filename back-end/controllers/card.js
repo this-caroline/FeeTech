@@ -22,10 +22,10 @@ module.exports = {
         )))
     },
     list(req, res) {
-        return user
+        return card
         .all()
-        .then(users => res.status(200).json(ResponseFormat.build(
-            users,
+        .then(card => res.status(200).json(ResponseFormat.build(
+            card,
             "User Information Reterive successfully",
             200,
             "success"

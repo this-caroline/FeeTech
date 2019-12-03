@@ -3,14 +3,25 @@ const ResponseFormat = require('../core').ResponseFormat;
 module.exports = {
 
     list(req, res) {
+        console.log('bateuuuuuuuuuu')
         return amount
         .all()
-        .then(users => res.status(200).json(ResponseFormat.build(
-            users,
-            "User Information Reterive successfully",
-            200,
-            "success"
-        )))
+        .then(amount => {
+            if(!amount){ 
+                res.status(204).json(ResponseFormat.build(
+                amount,
+                "no data",
+                204,
+                "false"
+            ))}
+                res.status(200).json(ResponseFormat.build(
+                amount,
+                "User amount Information Reterive successfully",
+                200,
+                "success"
+            ))
+        })
+        
         .catch(error => res.status(400).send(ResponseFormat.build(
             error,
             "Somthing went wrong when Reterieve Information",
