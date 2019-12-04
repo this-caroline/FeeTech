@@ -1,17 +1,21 @@
-import axios from 'axios';
-import { getToken } from './auth';
+import axios from "axios";
 
-const api = axios.create({
-  baseURL: 'http://localhost:3000'
-});
+class Api {
+  constructor() {
+    this.url = "http://localhost:3000/";
+    this.axios = axios.create({
+      baseURL: this.url
+    });
+    this.endpoints = this.loadApis();
+  }
 
-// api.interceptors.request.use(config => {
-//   const currentUser = JSON.parse(getToken());
+  loadApis = () => {
+    return {
+      addUsers: user => this.axios.post("api/users", user)
+    };
+  };
+}
 
-//   if (currentUser) {
-//     config.headers.Authorization = `Bearer ${currentUser.token}`;
-//   }
-//   return config;
-// });
+const api = new Api();
 
 export default api;

@@ -1,79 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import validate from 'validate.js';
-import { makeStyles } from '@material-ui/styles';
-import {
-  Grid,
-  Button,
-  IconButton,
-  TextField,
-  Link,
-  FormHelperText,
-  Checkbox,
-  Typography
-} from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import React, { useState, useEffect } from "react";
+import { Link as RouterLink, withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import validate from "validate.js";
+import { makeStyles } from "@material-ui/styles";
+import { Grid, Button, IconButton, TextField, Link, FormHelperText, Checkbox, Typography } from "@material-ui/core";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import moment from "moment";
+import api from "../../services/api";
 
 const schema = {
   firstName: {
-    presence: { allowEmpty: false, message: 'is required' },
+    presence: { allowEmpty: false, message: "is required" },
     length: {
       maximum: 32
     }
   },
-  lastName: {
-    presence: { allowEmpty: false, message: 'is required' },
-    length: {
-      maximum: 32
-    }
+  cpf: {
+    presence: { allowEmpty: false, message: "is required" }
   },
   email: {
-    presence: { allowEmpty: false, message: 'is required' },
+    presence: { allowEmpty: false, message: "is required" },
     email: true,
     length: {
       maximum: 64
     }
   },
   password: {
-    presence: { allowEmpty: false, message: 'is required' },
+    presence: { allowEmpty: false, message: "is required" },
     length: {
       maximum: 128
     }
   },
-  policy: {
-    presence: { allowEmpty: false, message: 'is required' },
-    checked: true
+  birthDate: {
+    presence: { allowEmpty: false, message: "is required" }
   }
 };
 
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.default,
-    height: '100%'
+    height: "100%"
   },
   grid: {
-    height: '100%'
+    height: "100%"
   },
   quoteContainer: {
-    [theme.breakpoints.down('md')]: {
-      display: 'none'
+    [theme.breakpoints.down("md")]: {
+      display: "none"
     }
   },
   quote: {
     backgroundColor: theme.palette.neutral,
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundImage: 'url(/images/auth.jpg)',
-    backgroundSize: 'cover',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center'
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundImage: "url(/images/auth.jpg)",
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center"
   },
   quoteInner: {
-    textAlign: 'center',
-    flexBasis: '600px'
+    textAlign: "center",
+    flexBasis: "600px"
   },
   quoteText: {
     color: theme.palette.white,
@@ -88,13 +77,13 @@ const useStyles = makeStyles(theme => ({
   },
   contentContainer: {},
   content: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
+    height: "100%",
+    display: "flex",
+    flexDirection: "column"
   },
   contentHeader: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     paddingTop: theme.spacing(5),
     paddingBototm: theme.spacing(2),
     paddingLeft: theme.spacing(2),
@@ -105,10 +94,10 @@ const useStyles = makeStyles(theme => ({
   },
   contentBody: {
     flexGrow: 1,
-    display: 'flex',
-    alignItems: 'center',
-    [theme.breakpoints.down('md')]: {
-      justifyContent: 'center'
+    display: "flex",
+    alignItems: "center",
+    [theme.breakpoints.down("md")]: {
+      justifyContent: "center"
     }
   },
   form: {
@@ -116,7 +105,7 @@ const useStyles = makeStyles(theme => ({
     paddingRight: 100,
     paddingBottom: 125,
     flexBasis: 700,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2)
     }
@@ -129,11 +118,11 @@ const useStyles = makeStyles(theme => ({
   },
   policy: {
     marginTop: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center'
+    display: "flex",
+    alignItems: "center"
   },
   policyCheckbox: {
-    marginLeft: '-14px'
+    marginLeft: "-14px"
   },
   signUpButton: {
     margin: theme.spacing(2, 0)
@@ -146,38 +135,20 @@ const SignUp = props => {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
-    isValid: false,
-    values: {},
-    touched: {},
-    errors: {}
+    name: "",
+    cpf: "",
+    email: "",
+    password: "",
+    birthDate: "",
+    removed: 0
   });
-
-  useEffect(() => {
-    const errors = validate(formState.values, schema);
-
-    setFormState(formState => ({
-      ...formState,
-      isValid: errors ? false : true,
-      errors: errors || {}
-    }));
-  }, [formState.values]);
 
   const handleChange = event => {
     event.persist();
 
     setFormState(formState => ({
       ...formState,
-      values: {
-        ...formState.values,
-        [event.target.name]:
-          event.target.type === 'checkbox'
-            ? event.target.checked
-            : event.target.value
-      },
-      touched: {
-        ...formState.touched,
-        [event.target.name]: true
-      }
+      [event.target.name]: event.target.value
     }));
   };
 
@@ -185,57 +156,35 @@ const SignUp = props => {
     history.goBack();
   };
 
-  const handleSignUp = event => {
+  const handleSignUp = async event => {
     event.preventDefault();
-    history.push('/');
-  };
+    setFormState({
+      ...formState,
+      birthDate: moment(formState.birthDate, "DD/MM/YYYY").format("YYYY-MM-DD")
+    });
 
-  const hasError = field =>
-    formState.touched[field] && formState.errors[field] ? true : false;
+    await api.endpoints.addUsers(formState);
+    history.push("/");
+  };
 
   return (
     <div className={classes.root}>
-      <Grid
-        className={classes.grid}
-        container
-      >
-        <Grid
-          className={classes.quoteContainer}
-          item
-          lg={5}
-        >
+      <Grid className={classes.grid} container>
+        <Grid className={classes.quoteContainer} item lg={5}>
           <div className={classes.quote}>
             <div className={classes.quoteInner}>
-              <Typography
-                className={classes.quoteText}
-                variant="h1"
-              >
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
+              <Typography className={classes.quoteText} variant="h1">
+                Seja bem-vindo(a) ao WebContas!
               </Typography>
               <div className={classes.person}>
-                <Typography
-                  className={classes.name}
-                  variant="body1"
-                >
-                  Takamaru Ayako
-                </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
-                  Manager at inVision
+                <Typography className={classes.quoteText} variant="h4">
+                  Se já possui cadastro, clique no botão abaixo para acessar sua conta.
                 </Typography>
               </div>
             </div>
           </div>
         </Grid>
-        <Grid
-          className={classes.content}
-          item
-          lg={7}
-          xs={12}
-        >
+        <Grid className={classes.content} item lg={7} xs={12}>
           <div className={classes.content}>
             <div className={classes.contentHeader}>
               <IconButton onClick={handleBack}>
@@ -243,130 +192,70 @@ const SignUp = props => {
               </IconButton>
             </div>
             <div className={classes.contentBody}>
-              <form
-                className={classes.form}
-                onSubmit={handleSignUp}
-              >
-                <Typography
-                  className={classes.title}
-                  variant="h2"
-                >
-                  Create new account
+              <form className={classes.form} onSubmit={handleSignUp}>
+                <Typography className={classes.title} variant="h2">
+                  Criar uma conta
                 </Typography>
-                <Typography
-                  color="textSecondary"
-                  gutterBottom
-                >
-                  Use your email to create new account
+                <Typography color="textSecondary" gutterBottom>
+                  Preencha seus dados abaixo
                 </Typography>
                 <TextField
                   className={classes.textField}
-                  error={hasError('firstName')}
                   fullWidth
-                  helperText={
-                    hasError('firstName') ? formState.errors.firstName[0] : null
-                  }
-                  label="First name"
-                  name="firstName"
+                  label="Nome"
+                  name="name"
                   onChange={handleChange}
                   type="text"
-                  value={formState.values.firstName || ''}
+                  value={formState.name || ""}
                   variant="outlined"
                 />
                 <TextField
                   className={classes.textField}
-                  error={hasError('lastName')}
                   fullWidth
-                  helperText={
-                    hasError('lastName') ? formState.errors.lastName[0] : null
-                  }
-                  label="Last name"
-                  name="lastName"
+                  label="CPF"
+                  name="cpf"
                   onChange={handleChange}
                   type="text"
-                  value={formState.values.lastName || ''}
+                  value={formState.cpf || ""}
                   variant="outlined"
                 />
                 <TextField
                   className={classes.textField}
-                  error={hasError('email')}
                   fullWidth
-                  helperText={
-                    hasError('email') ? formState.errors.email[0] : null
-                  }
-                  label="Email address"
+                  label="E-mail"
                   name="email"
                   onChange={handleChange}
                   type="text"
-                  value={formState.values.email || ''}
+                  value={formState.email || ""}
                   variant="outlined"
                 />
                 <TextField
                   className={classes.textField}
-                  error={hasError('password')}
                   fullWidth
-                  helperText={
-                    hasError('password') ? formState.errors.password[0] : null
-                  }
-                  label="Password"
+                  label="Senha"
                   name="password"
                   onChange={handleChange}
                   type="password"
-                  value={formState.values.password || ''}
+                  value={formState.password || ""}
                   variant="outlined"
                 />
-                <div className={classes.policy}>
-                  <Checkbox
-                    checked={formState.values.policy || false}
-                    className={classes.policyCheckbox}
-                    color="primary"
-                    name="policy"
-                    onChange={handleChange}
-                  />
-                  <Typography
-                    className={classes.policyText}
-                    color="textSecondary"
-                    variant="body1"
-                  >
-                    I have read the{' '}
-                    <Link
-                      color="primary"
-                      component={RouterLink}
-                      to="#"
-                      underline="always"
-                      variant="h6"
-                    >
-                      Terms and Conditions
-                    </Link>
-                  </Typography>
-                </div>
-                {hasError('policy') && (
-                  <FormHelperText error>
-                    {formState.errors.policy[0]}
-                  </FormHelperText>
-                )}
-                <Button
-                  className={classes.signUpButton}
-                  color="primary"
-                  disabled={!formState.isValid}
+                <TextField
+                  className={classes.textField}
                   fullWidth
-                  size="large"
-                  type="submit"
-                  variant="contained"
-                >
-                  Sign up now
+                  label="Data de Nascimento"
+                  name="birthDate"
+                  onChange={handleChange}
+                  type="text"
+                  value={formState.birthDate || ""}
+                  variant="outlined"
+                />
+                <Button className={classes.signUpButton} color="primary" fullWidth size="large" type="submit" variant="contained">
+                  Cadastrar-se
                 </Button>
-                <Typography
-                  color="textSecondary"
-                  variant="body1"
-                >
-                  Have an account?{' '}
-                  <Link
-                    component={RouterLink}
-                    to="/sign-in"
-                    variant="h6"
-                  >
-                    Sign in
+                <Typography color="textSecondary" variant="body1">
+                  Já tem uma conta?{" "}
+                  <Link component={RouterLink} to="/sign-in" variant="h6">
+                    Fazer Login
                   </Link>
                 </Typography>
               </form>
