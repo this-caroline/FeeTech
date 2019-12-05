@@ -14,6 +14,12 @@ const ResponseFormat = {
             message: message,
             statusType: statusType
         }
+    },
+    valError : (message, statusCode) => {
+        return {
+            statusCode: statusCode,
+            message: message,
+        }
     }
 }
 

@@ -1,50 +1,74 @@
 const card = require('../db/models').Card;
-const ResponseFormat = require('../core').ResponseFormat;
+const user = require('../db/models').User;
+const ResFormat = require('../core').ResponseFormat;
+var createError = require('http-errors');
+
 module.exports = {
-    create(req, res) {
+    async create(req, res) {
+        await user.findById(req.params.userId)
+        .then(data =>{ 
+            if(!data){
+            res.status(400).json(
+                ResFormat.valError("User doesn't exists", 404)
+        )}});
+
         return card
         .create({
-            amount: req.body.password,
-            card_name: req.body.name,
-            user_id: req.body.cpf,
-            removed: req.body.email,
+            amount: req.body.amount,
+            card_name: req.body.card_name,
+            user_id: req.params.userId,
+            removed: req.body.removed,
         })
-        .then(card => res.status(201).json(ResponseFormat.build(
+        .then(card => res.status(201).json(ResFormat.build(
             card,
             "Card Create Successfully",
             201,
             "success"
         )))
-        .catch(error => res.status(400).json(ResponseFormat.error(
+        .catch(error => res.status(400).json(ResFormat.error(
             error,
             "Something went wrong when create Card",
             "error"
         )))
     },
-    list(req, res) {
+
+    async list(req, res) {
+        await user.findById(req.params.userId)
+        .then(data =>{ 
+            if(!data){
+            res.status(400).json(
+                ResFormat.valError("User doesn't exists", 404)
+        )}})
+
         return card
-        .all()
-        .then(card => res.status(200).json(ResponseFormat.build(
-            card,
-            "User Information Reterive successfully",
-            200,
-            "success"
-        )))
-        .catch(error => res.status(400).send(ResponseFormat.build(
+        .findAll({ where:{'user_id': req.params.userId}})
+        .then(card =>{ 
+            if(!card.length)res.status(200).json(ResFormat.valError("No cards availables", 404))
+            else{
+                res.status(200).json(ResFormat.build(
+                    card,
+                    "User card Information Reterive successfully",
+                    200,
+                    "success"
+                ))
+            }
+           }
+        )
+        .catch(error => res.status(400).send(ResFormat.build(
             error,
-            "Somthing went wrong when Reterieve Information",
+            "Something went wrong when Reterieve User card Information",
             400,
             "error"
         )));
     },
   
-    update(req, res) {
+    async update(req, res) {
         return user
         .findById(req.params.userId)
         .then(usr => {
             if(!usr) {
                 return res.status(404).json(
-                    ResponseFormat.error(
+                    ResFormat.error(
                         {},
                         "User not found",
                         404,
@@ -60,7 +84,7 @@ module.exports = {
                 removed: req.body.email || usr.removed ,
             })
             .then(() => res.status(200).json(
-                ResponseFormat.build(
+                ResFormat.build(
                     usr,
                     "user card Update successfully",
                     200,
@@ -68,7 +92,7 @@ module.exports = {
                 )
             ))
             .catch((error) => res.status(500).json(
-                ResponseFormat.build(
+                ResFormat.build(
                     {},
                     "someting went wrong when update the user card",
                     500,
@@ -83,7 +107,7 @@ module.exports = {
         .then(usr => {
             if(!usr) {
                 return res.status(404).json(
-                    ResponseFormat.error(
+                    ResFormat.error(
                         {},
                         "user card not found",
                         404,
@@ -95,7 +119,7 @@ module.exports = {
             return usr
             .destroy()
             .then(() => res.status(200).json(
-               ResponseFormat.build(
+               ResFormat.build(
                  {},
                  "user card deleted successfully",
                  200,
@@ -103,7 +127,7 @@ module.exports = {
                )
             ))
             .catch(error => res.status(500).json(
-                ResponseFormat.error(
+                ResFormat.error(
                     error,
                     "someting went wrong when delete the user card",
                     500,
