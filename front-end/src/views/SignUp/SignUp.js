@@ -134,10 +134,6 @@ const SignUp = props => {
     setOpen(false);
   };
 
-  const handleBack = () => {
-    history.goBack();
-  };
-
   const handleSignUp = async event => {
     event.preventDefault();
 

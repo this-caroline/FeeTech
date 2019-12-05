@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../../../../services/api';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
@@ -38,8 +39,14 @@ const AccountDetails = props => {
     setStates(data);
   };
 
+  const getUserData = async () => {
+    const { data } = await api.endpoints.getUser(localStorage.getItem('userId'));
+    console.log(data.data);
+  };
+
   useEffect(() => {
     getStates();
+    getUserData();
   }, []);
 
   return (

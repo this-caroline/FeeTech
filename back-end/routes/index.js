@@ -1,10 +1,11 @@
-const userController = require('../controllers').users
-const cardController = require('../controllers').card
-const amountController = require('../controllers').amount
+const userController = require('../controllers').users;
+const cardController = require('../controllers').card;
+const amountController = require('../controllers').amount;
 
-module.exports = (app) => {
+module.exports = app => {
   app.post('/api/users', userController.create);
   app.get('/api/users', userController.list);
+  app.get('/api/users/:userId', userController.getOne);
   app.put('/api/users/:userId', userController.update);
   app.delete('/api/users/:userId', userController.destroy);
 
@@ -15,4 +16,4 @@ module.exports = (app) => {
 
   app.get('/api/amount', amountController.list);
   app.get('/api/amount/:userId', amountController.listOne);
-}
+};

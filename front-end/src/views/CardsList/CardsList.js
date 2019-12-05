@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 
 import { ProductsToolbar, ProductCard } from './components';
-import mockData from './data';
+import api from '../../services/api';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,18 +24,33 @@ const useStyles = makeStyles(theme => ({
 const CardsList = () => {
   const classes = useStyles();
 
-  const [products] = useState(mockData);
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    getCards();
+  }, []);
+
+  const getCards = async () => {
+    const { data } = await api.endpoints.listCards(localStorage.getItem('userId'));
+    if (data) setCards(...cards, data.data);
+  };
 
   return (
     <div className={classes.root}>
       <ProductsToolbar />
       <div className={classes.content}>
         <Grid container spacing={3}>
-          {products.map(product => (
-            <Grid item key={product.id} lg={4} md={6} xs={12}>
-              <ProductCard product={product} />
-            </Grid>
-          ))}
+          {cards ? (
+            cards.map(card => (
+              <Grid item key={card.id} lg={4} md={6} xs={12}>
+                <ProductCard card={card} />
+              </Grid>
+            ))
+          ) : (
+            <Typography display="inline" variant="body1">
+              Nenhum cartão cadastrado
+            </Typography>
+          )}
         </Grid>
       </div>
       {/* <div className={classes.pagination}>

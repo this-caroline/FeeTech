@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/styles';
-import { Button, TextField, Dialog } from '@material-ui/core';
+import { Button, TextField, Dialog, InputAdornment, Snackbar } from '@material-ui/core';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputMask from 'react-input-mask';
+import api from '../../services/api';
 
 const styles = theme => ({
   root: {
@@ -73,10 +72,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function SimpleDialog(props) {
-  const { onClose, selectedValue, open } = props;
+  const { onClose, selectedValue, open, isEdit, cardId } = props;
 
   const [cardForm, setCardForm] = useState({
-    name: '',
+    card_name: '',
     amount: 0,
     removed: 0
   });
@@ -96,15 +95,28 @@ export default function SimpleDialog(props) {
     onClose(selectedValue);
   };
 
-  const addCard = () => {
-    console.log(cardForm);
+  const [snackbarOpen, setOpen] = React.useState(false);
+
+  const addCard = async () => {
+    await api.endpoints.addCard(localStorage.getItem('userId'), cardForm);
+    setOpen(true);
+    onClose(selectedValue);
+    window.location.reload();
+  };
+
+  const editCard = async () => {
+    const res = await api.endpoints.editCard(localStorage.getItem('userId'), { card_id: cardId, ...cardForm });
+    console.log(res);
+    setOpen(true);
+    onClose(selectedValue);
+    window.location.reload();
   };
 
   return (
     <div>
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Adicionar novo cartão
+          {!isEdit ? 'Adicionar novo cartão' : 'Editar cartão'}
         </DialogTitle>
         <DialogContent dividers>
           <div className={classes.imageContainer}>
@@ -114,9 +126,9 @@ export default function SimpleDialog(props) {
             fullWidth
             className={classes.textField}
             label="Nome"
-            name="name"
+            name="card_name"
             type="text"
-            value={cardForm.name || ''}
+            value={cardForm.card_name || ''}
             variant="outlined"
             onChange={handleChange}
           />
@@ -135,11 +147,35 @@ export default function SimpleDialog(props) {
           />
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={addCard} color="primary" variant="contained">
-            Adicionar
+          <Button
+            autoFocus
+            onClick={() => {
+              !isEdit ? addCard() : editCard();
+            }}
+            color="primary"
+            variant="contained">
+            {!isEdit ? 'Adicionar' : 'Editar'}
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        ContentProps={{
+          'aria-describedby': 'message-id'
+        }}
+        message={<span id="message-id">Cartão adicionado com sucesso!</span>}
+        action={[
+          <IconButton key="close" aria-label="close" color="inherit" className={classes.close} onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        ]}
+      />
     </div>
   );
 }
