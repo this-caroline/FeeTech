@@ -8,9 +8,9 @@ module.exports = (sequelize, DataTypes) => {
     amount: DataTypes.INTEGER,
   }, {});
   Card.associate = function(models) {
-    Card.hasOne(models.User,{
-      foreignKey: 'id',
-      as: 'user_id'
+    Card.belongsTo(models.User,{
+      foreignKey: 'user_id',
+      onDelete: 'CASCADE'
     });
 
   };
