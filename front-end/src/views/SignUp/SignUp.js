@@ -1,68 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Link as RouterLink, withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
-import validate from "validate.js";
-import { makeStyles } from "@material-ui/styles";
-import { Grid, Button, IconButton, TextField, Link, FormHelperText, Checkbox, Typography } from "@material-ui/core";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import moment from "moment";
-import api from "../../services/api";
-
-const schema = {
-  firstName: {
-    presence: { allowEmpty: false, message: "is required" },
-    length: {
-      maximum: 32
-    }
-  },
-  cpf: {
-    presence: { allowEmpty: false, message: "is required" }
-  },
-  email: {
-    presence: { allowEmpty: false, message: "is required" },
-    email: true,
-    length: {
-      maximum: 64
-    }
-  },
-  password: {
-    presence: { allowEmpty: false, message: "is required" },
-    length: {
-      maximum: 128
-    }
-  },
-  birthDate: {
-    presence: { allowEmpty: false, message: "is required" }
-  }
-};
+import React, { useState, useEffect } from 'react';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/styles';
+import { Grid, Button, IconButton, TextField, Link, Snackbar, Typography } from '@material-ui/core';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import CloseIcon from '@material-ui/icons/Close';
+import moment from 'moment';
+import api from '../../services/api';
 
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.default,
-    height: "100%"
+    height: '100%'
   },
   grid: {
-    height: "100%"
+    height: '100%'
   },
   quoteContainer: {
-    [theme.breakpoints.down("md")]: {
-      display: "none"
+    [theme.breakpoints.down('md')]: {
+      display: 'none'
     }
   },
   quote: {
     backgroundColor: theme.palette.neutral,
-    height: "100%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundImage: "url(/images/auth.jpg)",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center"
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundImage: 'url(/images/auth.jpg)',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center'
   },
   quoteInner: {
-    textAlign: "center",
-    flexBasis: "600px"
+    textAlign: 'center',
+    flexBasis: '600px'
   },
   quoteText: {
     color: theme.palette.white,
@@ -77,13 +49,13 @@ const useStyles = makeStyles(theme => ({
   },
   contentContainer: {},
   content: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column"
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
   },
   contentHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     paddingTop: theme.spacing(5),
     paddingBototm: theme.spacing(2),
     paddingLeft: theme.spacing(2),
@@ -94,10 +66,10 @@ const useStyles = makeStyles(theme => ({
   },
   contentBody: {
     flexGrow: 1,
-    display: "flex",
-    alignItems: "center",
-    [theme.breakpoints.down("md")]: {
-      justifyContent: "center"
+    display: 'flex',
+    alignItems: 'center',
+    [theme.breakpoints.down('md')]: {
+      justifyContent: 'center'
     }
   },
   form: {
@@ -105,7 +77,7 @@ const useStyles = makeStyles(theme => ({
     paddingRight: 100,
     paddingBottom: 125,
     flexBasis: 700,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('sm')]: {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2)
     }
@@ -118,11 +90,11 @@ const useStyles = makeStyles(theme => ({
   },
   policy: {
     marginTop: theme.spacing(1),
-    display: "flex",
-    alignItems: "center"
+    display: 'flex',
+    alignItems: 'center'
   },
   policyCheckbox: {
-    marginLeft: "-14px"
+    marginLeft: '-14px'
   },
   signUpButton: {
     margin: theme.spacing(2, 0)
@@ -135,11 +107,11 @@ const SignUp = props => {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
-    name: "",
-    cpf: "",
-    email: "",
-    password: "",
-    birthDate: "",
+    name: '',
+    cpf: '',
+    email: '',
+    password: '',
+    birth_date: null,
     removed: 0
   });
 
@@ -152,19 +124,34 @@ const SignUp = props => {
     }));
   };
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   const handleBack = () => {
     history.goBack();
   };
 
   const handleSignUp = async event => {
     event.preventDefault();
-    setFormState({
-      ...formState,
-      birthDate: moment(formState.birthDate, "DD/MM/YYYY").format("YYYY-MM-DD")
-    });
+
+    setOpen(true);
 
     await api.endpoints.addUsers(formState);
-    history.push("/");
+    setTimeout(() => history.push('/sign-in'), 3000);
+  };
+
+  const formatDate = () => {
+    setFormState({
+      ...formState,
+      birth_date: moment(formState.birth_date, 'DD/MM/YYYY').format('YYYY-MM-DD')
+    });
   };
 
   return (
@@ -178,7 +165,7 @@ const SignUp = props => {
               </Typography>
               <div className={classes.person}>
                 <Typography className={classes.quoteText} variant="h4">
-                  Se já possui cadastro, clique no botão abaixo para acessar sua conta.
+                  Tenha o controle de suas finanças em mãos e descomplique de vez sua vida financeira.
                 </Typography>
               </div>
             </div>
@@ -186,11 +173,6 @@ const SignUp = props => {
         </Grid>
         <Grid className={classes.content} item lg={7} xs={12}>
           <div className={classes.content}>
-            <div className={classes.contentHeader}>
-              <IconButton onClick={handleBack}>
-                <ArrowBackIcon />
-              </IconButton>
-            </div>
             <div className={classes.contentBody}>
               <form className={classes.form} onSubmit={handleSignUp}>
                 <Typography className={classes.title} variant="h2">
@@ -206,7 +188,7 @@ const SignUp = props => {
                   name="name"
                   onChange={handleChange}
                   type="text"
-                  value={formState.name || ""}
+                  value={formState.name || ''}
                   variant="outlined"
                 />
                 <TextField
@@ -216,7 +198,7 @@ const SignUp = props => {
                   name="cpf"
                   onChange={handleChange}
                   type="text"
-                  value={formState.cpf || ""}
+                  value={formState.cpf || ''}
                   variant="outlined"
                 />
                 <TextField
@@ -226,7 +208,7 @@ const SignUp = props => {
                   name="email"
                   onChange={handleChange}
                   type="text"
-                  value={formState.email || ""}
+                  value={formState.email || ''}
                   variant="outlined"
                 />
                 <TextField
@@ -236,24 +218,25 @@ const SignUp = props => {
                   name="password"
                   onChange={handleChange}
                   type="password"
-                  value={formState.password || ""}
+                  value={formState.password || ''}
                   variant="outlined"
                 />
                 <TextField
                   className={classes.textField}
                   fullWidth
                   label="Data de Nascimento"
-                  name="birthDate"
+                  name="birth_date"
                   onChange={handleChange}
                   type="text"
-                  value={formState.birthDate || ""}
+                  onBlur={formatDate}
+                  value={formState.birth_date || ''}
                   variant="outlined"
                 />
                 <Button className={classes.signUpButton} color="primary" fullWidth size="large" type="submit" variant="contained">
                   Cadastrar-se
                 </Button>
                 <Typography color="textSecondary" variant="body1">
-                  Já tem uma conta?{" "}
+                  Já tem uma conta?{' '}
                   <Link component={RouterLink} to="/sign-in" variant="h6">
                     Fazer Login
                   </Link>
@@ -263,6 +246,24 @@ const SignUp = props => {
           </div>
         </Grid>
       </Grid>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        ContentProps={{
+          'aria-describedby': 'message-id'
+        }}
+        message={<span id="message-id">Usuário criado com sucesso!</span>}
+        action={[
+          <IconButton key="close" aria-label="close" color="inherit" className={classes.close} onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        ]}
+      />
     </div>
   );
 };
