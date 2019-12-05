@@ -1,7 +1,7 @@
 {
-  "name": "react-material-dashboard",
-  "author": "DeviasIO",
-  "email": "contact@devias.io",
+  "name": "webcontas-client",
+  "author": "webcontas",
+  "email": "email@email.com",
   "licence": "MIT",
   "version": "0.3.0",
   "private": false,
@@ -43,6 +43,7 @@
     "react": "^16.8.6",
     "react-chartjs-2": "^2.7.6",
     "react-dom": "^16.8.6",
+    "react-input-mask": "^2.0.4",
     "react-perfect-scrollbar": "^1.5.3",
     "react-router-dom": "^5.0.1",
     "react-scripts": "^3.0.1",
