@@ -10,8 +10,9 @@ module.exports = (app) => {
 
   app.post('/api/card/:userId', cardController.create);
   app.get('/api/card/:userId', cardController.list);
+  app.put('/api/card/:userId', cardController.update);
+  app.delete('/api/card/:userId', cardController.destroy);
 
   app.get('/api/amount', amountController.list);
   app.get('/api/amount/:userId', amountController.listOne);
-
 }

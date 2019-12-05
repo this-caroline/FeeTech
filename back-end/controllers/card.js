@@ -5,13 +5,6 @@ var createError = require('http-errors');
 
 module.exports = {
     async create(req, res) {
-        await user.findById(req.params.userId)
-        .then(data =>{ 
-            if(!data){
-            res.status(400).json(
-                ResFormat.valError("User doesn't exists", 404)
-        )}});
-
         return card
         .create({
             amount: req.body.amount,
@@ -63,49 +56,62 @@ module.exports = {
     },
   
     async update(req, res) {
-        return user
-        .findById(req.params.userId)
-        .then(usr => {
-            if(!usr) {
+        await user.findById(req.params.userId)
+        .then(data =>{ 
+            if(!data){
+            res.status(400).json(
+                ResFormat.valError("User doesn't exists", 404)
+        )}});
+
+        return card
+        .findById(req.body.card_id)
+        .then(data => {
+            if(!data) {
                 return res.status(404).json(
                     ResFormat.error(
                         {},
-                        "User not found",
+                        "Card not found",
                         404,
                         "error"
                     )
                 );
             }
 
-            return usr
+            return data
             .update({
-                amount: req.body.password || usr.amount ,
-                card_name: req.body.name || usr.card_name ,
-                removed: req.body.email || usr.removed ,
+                amount: req.body.amount || data.amount ,
+                card_name: req.body.card_name || data.card_name ,
+                removed: req.body.removed || data.removed ,
             })
             .then(() => res.status(200).json(
                 ResFormat.build(
-                    usr,
-                    "user card Update successfully",
+                    data,
+                    "Card Updated successfully",
                     200,
                     "success"
-                )
-            ))
+            )))
             .catch((error) => res.status(500).json(
                 ResFormat.build(
                     {},
-                    "someting went wrong when update the user card",
+                    "Someting went wrong when update the user card",
                     500,
                     "error"
                 )
             ));
         });
     },
-    destroy (req, res) {
-        return user
-        .findById(req.params.userId)
-        .then(usr => {
-            if(!usr) {
+    async destroy (req, res) {
+        await user.findById(req.params.userId)
+        .then(usr =>{ 
+            if(!usr){
+                res.status(400).json(
+                ResFormat.valError("User doesn't exists", 404)
+        )}});
+
+        return card
+        .findById(req.body.card_id)
+        .then(data => {
+            if(!data) {
                 return res.status(404).json(
                     ResFormat.error(
                         {},
@@ -116,7 +122,7 @@ module.exports = {
                 );
             }
 
-            return usr
+            return data
             .destroy()
             .then(() => res.status(200).json(
                ResFormat.build(
