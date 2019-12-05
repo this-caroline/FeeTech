@@ -4,7 +4,7 @@ var User = require('./user');
 module.exports = (sequelize, DataTypes) => {
   var Card = sequelize.define('Card', {
     card_name: DataTypes.STRING,
-    removed: DataTypes.INTEGER,
+    removed: DataTypes.BOOLEAN,
     amount: DataTypes.INTEGER,
   }, {});
   Card.associate = function(models) {
