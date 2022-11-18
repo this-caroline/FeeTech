@@ -46,7 +46,7 @@
     "react-input-mask": "^2.0.4",
     "react-perfect-scrollbar": "^1.5.3",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^5.0.1",
     "recompose": "^0.30.0",
     "underscore": "^1.9.1",
     "uuid": "^3.3.2",
